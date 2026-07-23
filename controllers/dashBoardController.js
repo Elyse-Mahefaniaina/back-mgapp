@@ -35,7 +35,7 @@ async function getDashboard(req, res) {
           COUNT(DISTINCT CASE WHEN v.date = CURDATE() THEN v.id END) AS nb_ventes_today,
           COALESCE(SUM(CASE WHEN v.date = CURDATE() THEN vp.quantite * vp.prix_unitaire ELSE 0 END), 0) AS ca_today
         FROM vente v
-        LEFT JOIN vente_produit vp ON vp.vente_id = v.id
+        LEFT JOIN Vente_produit vp ON vp.vente_id = v.id
         WHERE MONTH(v.date) = MONTH(CURDATE())
           AND YEAR(v.date)  = YEAR(CURDATE())
       `, { type: QueryTypes.SELECT }),
@@ -75,10 +75,10 @@ async function getDashboard(req, res) {
         FROM transports t
         LEFT JOIN (
           SELECT ts1.transport_id, ts1.status
-          FROM transportstatus ts1
+          FROM TransportStatus ts1
           INNER JOIN (
             SELECT transport_id, MAX(id) AS max_id
-            FROM transportstatus
+            FROM TransportStatus
             GROUP BY transport_id
           ) tmax ON tmax.max_id = ts1.id
         ) ts_last ON ts_last.transport_id = t.id
@@ -92,7 +92,7 @@ async function getDashboard(req, res) {
           v.date,
           COALESCE(SUM(vp.quantite * vp.prix_unitaire), 0) AS ca
         FROM vente v
-        LEFT JOIN vente_produit vp ON vp.vente_id = v.id
+        LEFT JOIN Vente_produit vp ON vp.vente_id = v.id
         WHERE v.date >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
         GROUP BY v.date
         ORDER BY v.date ASC
@@ -117,7 +117,7 @@ async function getDashboard(req, res) {
           p.description,
           SUM(vp.quantite) AS quantite_vendue,
           SUM(vp.quantite * vp.prix_unitaire) AS ca
-        FROM vente_produit vp
+        FROM Vente_produit vp
         JOIN vente v ON v.id = vp.vente_id
         JOIN produits p ON p.id = vp.produit_id
         WHERE MONTH(v.date) = MONTH(CURDATE())
@@ -133,7 +133,7 @@ async function getDashboard(req, res) {
           vpm.mode,
           COUNT(*) AS nb,
           SUM(vpm.recu) AS total
-        FROM vente_paiement vpm
+        FROM Vente_paiement vpm
         JOIN vente v ON v.id = vpm.vente_id
         WHERE MONTH(v.date) = MONTH(CURDATE())
           AND YEAR(v.date)  = YEAR(CURDATE())
@@ -148,10 +148,10 @@ async function getDashboard(req, res) {
         FROM transports t
         LEFT JOIN (
           SELECT ts1.transport_id, ts1.status
-          FROM transportstatus ts1
+          FROM TransportStatus ts1
           INNER JOIN (
             SELECT transport_id, MAX(id) AS max_id
-            FROM transportstatus
+            FROM TransportStatus
             GROUP BY transport_id
           ) tmax ON tmax.max_id = ts1.id
         ) ts_last ON ts_last.transport_id = t.id
@@ -224,7 +224,7 @@ async function getDashboardVentes(req, res) {
           COUNT(DISTINCT v.id)                             AS nb_ventes,
           COALESCE(SUM(vp.quantite * vp.prix_unitaire), 0) AS ca
         FROM vente v
-        LEFT JOIN vente_produit vp ON vp.vente_id = v.id
+        LEFT JOIN Vente_produit vp ON vp.vente_id = v.id
         WHERE v.date >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
         GROUP BY YEAR(v.date), MONTH(v.date)
         ORDER BY annee ASC, mois ASC
@@ -236,7 +236,7 @@ async function getDashboardVentes(req, res) {
           COUNT(DISTINCT v.id)                             AS nb_ventes,
           COALESCE(SUM(vp.quantite * vp.prix_unitaire), 0) AS ca
         FROM vente v
-        LEFT JOIN vente_produit vp ON vp.vente_id = v.id
+        LEFT JOIN Vente_produit vp ON vp.vente_id = v.id
         LEFT JOIN sites_activite s ON s.id = v.site_id
         WHERE MONTH(v.date) = MONTH(CURDATE())
           AND YEAR(v.date)  = YEAR(CURDATE())
