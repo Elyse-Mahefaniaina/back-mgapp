@@ -1,5 +1,11 @@
 const { Sequelize } = require('sequelize');
 const dotenv = require("dotenv");
+// Import explicite de mysql2 : Sequelize le charge normalement en dynamique
+// (require via variable), ce que les bundlers serverless (Vercel/@vercel/node)
+// ne détectent pas -> "Please install mysql2 package manually".
+// En le requérant ici et en le passant via `dialectModule`, on force son
+// inclusion dans le bundle et Sequelize l'utilise directement.
+const mysql2 = require("mysql2");
 
 dotenv.config();
 
@@ -31,6 +37,7 @@ const sequelize = new Sequelize(
     host: process.env.DB_HOST,
     port: process.env.DB_PORT || 3306,
     dialect: process.env.DIALECT || "mysql",
+    dialectModule: mysql2,
     logging: null,
     dialectOptions: useSsl ? { ssl } : {},
     // Pool réduite : indispensable en serverless (Vercel) pour ne pas
