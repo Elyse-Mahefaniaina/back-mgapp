@@ -45,12 +45,17 @@ const initAssociations = require('./models/transport/associations');
 
 applyAchatHooks(Achat);
 
+// Le schéma est géré par les migrations SQL : on NE fait PAS de sequelize.sync()
+// (surtout en serverless, où il ouvrirait des connexions à chaque démarrage à froid
+//  et saturerait la limite du plan Aiven gratuit). On teste juste la connexion.
 sequelize.authenticate()
-  .then(() => {
-    console.log("Connexion à MySQL réussie.");
-    return sequelize.sync({update: true});
-  })
+  .then(() => console.log("Connexion à MySQL réussie."))
   .catch(err => console.error("Échec de connexion à MySQL :", err));
+
+// Évite qu'une erreur asynchrone (ex. pic de connexions DB) tue la fonction.
+process.on("unhandledRejection", (err) => {
+  console.error("unhandledRejection:", err);
+});
 
 initAssociations();
 

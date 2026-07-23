@@ -33,6 +33,14 @@ const sequelize = new Sequelize(
     dialect: process.env.DIALECT || "mysql",
     logging: null,
     dialectOptions: useSsl ? { ssl } : {},
+    // Pool réduite : indispensable en serverless (Vercel) pour ne pas
+    // dépasser la limite de connexions du plan Aiven gratuit.
+    pool: {
+      max: Number(process.env.DB_POOL_MAX) || 3,
+      min: 0,
+      idle: 10000,
+      acquire: 30000,
+    },
   }
 );
 
