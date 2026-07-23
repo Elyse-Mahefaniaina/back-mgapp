@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const TransportController = require('../controllers/TransportController');
+const TransportController = require('../controllers/transportController');
 
 // ── Utilitaire ─────────────────────────────────────────────────────────────
 router.get('/vehicules-dispos', TransportController.getVehiculesDisponibles);

@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
 const Role = require('./Role');
-const SiteActivite = require('./SiteActiviteActivite');
+const SiteActivite = require('../core/SiteActivite');
 
 const RolePermissionSite = sequelize.define('RolePermissionSite', {
   id: {
